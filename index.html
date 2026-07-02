@@ -262,6 +262,90 @@
     .reader-ctrl .theme-btn{min-width:0}
     .topbar #crumb{display:none}
   }
+
+  /* =====================================================================
+     BOOK VIEW  —  full-screen two-page spread with 3D page-turn
+     ===================================================================== */
+  #book{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;
+    background:
+      radial-gradient(1400px 800px at 50% 118%, rgba(0,0,0,.28), transparent 62%),
+      var(--desk,#c9ba98);
+    font-family:var(--ui-font);}
+  html[data-theme="white"] #book{--desk:#d6d2c9;}
+  html[data-theme="dark"]  #book{--desk:#0d0c0a; background:radial-gradient(1400px 800px at 50% 118%, rgba(0,0,0,.6), transparent 62%), #0d0c0a;}
+  #book.show{display:flex;}
+
+  .book-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;flex:0 0 auto;}
+  .book-bar .title{flex:1;font-weight:600;color:var(--ink);font-size:14px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .book-bar .grp{display:flex;gap:6px;align-items:center;}
+  .book-bar button{background:rgba(255,255,255,.16);border:1px solid rgba(110,84,38,.30);
+    color:var(--ink);border-radius:8px;padding:6px 11px;font-size:13px;cursor:pointer;
+    font-family:var(--ui-font);line-height:1;transition:border-color .15s,background .15s;}
+  html[data-theme="dark"] .book-bar button{background:rgba(255,255,255,.09);border-color:#ffffff26;}
+  .book-bar button:hover{border-color:var(--gold);}
+  .book-bar .close{font-weight:700;}
+
+  .book-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
+    perspective:2800px;padding:4px 12px 14px;}
+  .book-frame{position:relative;width:min(1180px,95vw);height:100%;max-height:920px;
+    background:var(--panel);border-radius:6px;
+    box-shadow:0 26px 64px rgba(25,16,4,.5),0 6px 16px rgba(25,16,4,.32);}
+  .book-frame::before,.book-frame::after{content:"";position:absolute;top:8px;bottom:8px;width:9px;border-radius:4px;z-index:0;}
+  .book-frame::before{left:-9px;background:linear-gradient(90deg,transparent,var(--panel2));box-shadow:-3px 0 7px rgba(0,0,0,.2);}
+  .book-frame::after{right:-9px;background:linear-gradient(270deg,transparent,var(--panel2));box-shadow:3px 0 7px rgba(0,0,0,.2);}
+
+  .book-pages{position:absolute;inset:0;overflow:hidden;border-radius:6px;}
+  .book-flow{position:absolute;color:var(--body);font-family:var(--read-font);
+    column-fill:auto;will-change:transform;}
+  .book-flow>:first-child{margin-top:0 !important;}
+  .book-spine{position:absolute;top:0;bottom:0;left:50%;width:66px;transform:translateX(-50%);
+    pointer-events:none;z-index:3;
+    background:linear-gradient(90deg,transparent,rgba(70,46,12,.09) 42%,rgba(70,46,12,.15) 50%,rgba(70,46,12,.09) 58%,transparent);}
+  html[data-theme="dark"] .book-spine{background:linear-gradient(90deg,transparent,rgba(0,0,0,.55) 46%,rgba(0,0,0,.68) 50%,rgba(0,0,0,.55) 54%,transparent);}
+
+  /* typography tuned for narrow book columns */
+  .book-flow .kicker{font-family:var(--ui-font);font-size:11px;letter-spacing:1px;}
+  .book-flow h2{font-size:calc(25px*var(--rs));color:var(--gold2);line-height:1.24;margin:.1em 0 .4em;break-after:avoid;}
+  .book-flow h3{font-size:calc(18.5px*var(--rs));color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:5px;margin:1.05em 0 .35em;break-after:avoid;}
+  .book-flow h4{font-size:calc(15.5px*var(--rs));color:var(--gold2);margin:.95em 0 .25em;break-after:avoid;}
+  .book-flow p{font-size:calc(15px*var(--rs));line-height:1.72;margin:.55em 0;text-align:justify;hyphens:auto;}
+  .book-flow li{font-size:calc(15px*var(--rs));line-height:1.6;margin:.28em 0;}
+  .book-flow .lead{font-size:calc(16px*var(--rs)) !important;}
+  .book-flow .box,.book-flow .keyterm{font-size:calc(13.5px*var(--rs));break-inside:avoid;line-height:1.6;}
+  .book-flow table{font-size:calc(12px*var(--rs));table-layout:fixed;width:100%;break-inside:avoid;}
+  .book-flow th,.book-flow td{padding:6px 8px;word-break:break-word;}
+  .book-flow img{max-width:100%;height:auto;}
+
+  /* click zones + arrows */
+  .book-nav{position:absolute;top:0;bottom:0;width:15%;z-index:4;cursor:pointer;border:none;background:transparent;
+    display:flex;align-items:center;}
+  .book-nav.prev{left:0;justify-content:flex-start;padding-left:10px;}
+  .book-nav.next{right:0;justify-content:flex-end;padding-right:10px;}
+  .book-nav .arw{opacity:0;transition:opacity .2s;font-size:26px;color:var(--gold2);
+    width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+    background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);}
+  .book-frame:hover .book-nav .arw{opacity:.9;}
+  .book-nav[disabled]{cursor:default;pointer-events:none;}
+  .book-nav[disabled] .arw{display:none;}
+
+  /* the turning leaf */
+  .flip-sheet{position:absolute;top:0;bottom:0;z-index:6;display:none;pointer-events:none;
+    background:linear-gradient(90deg,var(--panel),var(--panel2));
+    backface-visibility:visible;
+    box-shadow:0 0 22px rgba(35,22,5,.32);}
+  .flip-sheet.fwd{border-radius:0 6px 6px 0;
+    box-shadow:14px 0 26px rgba(35,22,5,.28), inset 6px 0 14px rgba(60,40,10,.10);}
+  .flip-sheet.bwd{border-radius:6px 0 0 6px;
+    box-shadow:-14px 0 26px rgba(35,22,5,.28), inset -6px 0 14px rgba(60,40,10,.10);}
+
+  .book-foot{flex:0 0 auto;text-align:center;padding:6px 0 12px;font-size:12px;color:var(--muted);letter-spacing:.3px;}
+
+  @media(max-width:780px){
+    .book-spine{display:none;}
+    .book-frame{width:96vw;}
+    .book-bar .lbl-fs{display:none;}
+  }
 </style>
 </head>
 <body>
@@ -387,6 +471,7 @@
       <button class="rc theme-btn" onclick="cycleTheme()" title="Reading theme">
         <span class="sw"></span><span class="lbl" id="themeLabel">Sepia</span>
       </button>
+      <button class="rc book-open" onclick="openBook()" title="Read as a book (full screen, page-turn)">📖 Book</button>
       <span class="mt" id="pct">0%</span>
     </div>
   </div>
@@ -3095,13 +3180,181 @@
   function applyRS(){
     document.documentElement.style.setProperty('--rs',rs);
     localStorage.setItem('jm-rs',rs);
+    if(window.__bookRepaginate)window.__bookRepaginate();
   }
   function fontStep(dir){
     rs=Math.min(1.6,Math.max(0.85,Math.round((rs+dir*0.08)*100)/100));
     applyRS();
   }
+  const _cycleThemeBase=cycleTheme;
+  cycleTheme=function(){_cycleThemeBase();if(window.__bookOnTheme)window.__bookOnTheme();};
   window.cycleTheme=cycleTheme; window.fontStep=fontStep;
+  window.PAGES=PAGES; window.go=go; window.THEMES=THEMES; window.TLABEL=TLABEL;
+  window.getReaderTheme=()=>curTheme;
   applyTheme(); applyRS();
+
+  /* =====================================================================
+     BOOK VIEW ENGINE — injected overlay, two-page spread, 3D page-turn
+     ===================================================================== */
+  (function(){
+    const bookEl=document.createElement('div');
+    bookEl.id='book';
+    bookEl.innerHTML=
+      '<div class="book-bar">'+
+        '<button class="close" id="bookClose" title="Close (Esc)">✕ Close</button>'+
+        '<div class="title" id="bookTitle"></div>'+
+        '<div class="grp">'+
+          '<button id="bookAminus" title="Smaller text">A−</button>'+
+          '<button id="bookAplus" title="Larger text">A＋</button>'+
+          '<button id="bookTheme" title="Reading theme"><span id="bookThemeLbl">Sepia</span></button>'+
+          '<button id="bookFs" title="Full screen">⛶<span class="lbl-fs"> Full screen</span></button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="book-stage">'+
+        '<div class="book-frame">'+
+          '<div class="book-pages" id="bookPages">'+
+            '<div class="book-flow" id="bookFlow"></div>'+
+            '<div class="book-spine"></div>'+
+            '<div class="flip-sheet" id="bookLeaf"></div>'+
+            '<button class="book-nav prev" id="bookPrev"><span class="arw">‹</span></button>'+
+            '<button class="book-nav next" id="bookNext"><span class="arw">›</span></button>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="book-foot" id="bookFoot"></div>';
+    document.body.appendChild(bookEl);
+
+    const flow=bookEl.querySelector('#bookFlow');
+    const pagesEl=bookEl.querySelector('#bookPages');
+    const titleEl=bookEl.querySelector('#bookTitle');
+    const footEl=bookEl.querySelector('#bookFoot');
+    const leaf=bookEl.querySelector('#bookLeaf');
+    const prevBtn=bookEl.querySelector('#bookPrev');
+    const nextBtn=bookEl.querySelector('#bookNext');
+
+    let seq=[], ci=0, spread=0, spreadsTotal=1, animating=false;
+    let geom={N:2,colW:0,gap:0,step:0,spreadStep:0,Wf:0,Hf:0};
+
+    function contentSeq(){ return (window.PAGES||['home']).filter(id=>id!=='home'); }
+    function chapterTitle(id){
+      const link=document.querySelector('.nl[data-page="'+id+'"]');
+      return link?link.textContent.trim():id;
+    }
+    function currentActiveId(){ const a=document.querySelector('.page.active'); return a?a.id:'home'; }
+
+    function loadChapter(id){
+      const src=document.getElementById(id);
+      if(!src){flow.innerHTML='';return;}
+      const clone=src.cloneNode(true);
+      clone.querySelectorAll('.pager,.readrow,script,button,.tool,.result,.wsheet,.savednote').forEach(n=>n.remove());
+      flow.innerHTML=clone.innerHTML;
+      titleEl.textContent=chapterTitle(id);
+    }
+    function computeGeom(){
+      const Wf=pagesEl.clientWidth, Hf=pagesEl.clientHeight;
+      const N=Wf>=780?2:1;
+      const padX=Math.min(64,Math.max(22,Math.round(Wf*0.045)));
+      const padY=Math.min(58,Math.max(28,Math.round(Hf*0.055)));
+      const gap=N===2?Math.min(96,Math.max(44,Math.round(Wf*0.06))):0;
+      const innerW=Wf-2*padX;
+      const colW=(innerW-(N-1)*gap)/N;
+      flow.style.left=padX+'px'; flow.style.right=padX+'px';
+      flow.style.top=padY+'px'; flow.style.bottom=padY+'px';
+      flow.style.columnWidth=colW+'px'; flow.style.columnGap=gap+'px';
+      flow.style.transition='none'; flow.style.transform='translateX(0)';
+      const step=colW+gap;
+      const totalCols=Math.max(1,Math.round((flow.scrollWidth+gap)/step));
+      spreadsTotal=Math.max(1,Math.ceil(totalCols/N));
+      geom={N,colW,gap,step,spreadStep:N*step,Wf,Hf};
+    }
+    function render(){
+      flow.style.transition='none';
+      flow.style.transform='translateX('+(-spread*geom.spreadStep)+'px)';
+      const atStart=(ci<=0&&spread<=0), atEnd=(ci>=seq.length-1&&spread>=spreadsTotal-1);
+      prevBtn.toggleAttribute('disabled',atStart);
+      nextBtn.toggleAttribute('disabled',atEnd);
+      footEl.textContent=chapterTitle(seq[ci])+'  ·  '+(ci+1)+' / '+seq.length+'  ·  page '+(spread+1)+' of '+spreadsTotal;
+    }
+    function repaginate(){ if(!bookEl.classList.contains('show'))return; computeGeom(); if(spread>spreadsTotal-1)spread=spreadsTotal-1; render(); }
+    window.__bookRepaginate=repaginate;
+    window.__bookOnTheme=function(){ const l=bookEl.querySelector('#bookThemeLbl'); if(l&&window.getReaderTheme)l.textContent=(window.TLABEL||{})[window.getReaderTheme()]||''; repaginate(); };
+
+    function goChapter(delta,toEnd){
+      const ni=ci+delta; if(ni<0||ni>=seq.length)return false;
+      ci=ni; loadChapter(seq[ci]); computeGeom();
+      spread=toEnd?spreadsTotal-1:0; render(); return true;
+    }
+    function doFlip(dir){
+      if(animating)return;
+      if(dir>0 && spread>=spreadsTotal-1){ if(ci>=seq.length-1)return; animateLeaf(dir,()=>goChapter(1,false)); return; }
+      if(dir<0 && spread<=0){ if(ci<=0)return; animateLeaf(dir,()=>goChapter(-1,true)); return; }
+      animateLeaf(dir,()=>{ spread+=dir; render(); });
+    }
+    function animateLeaf(dir,swap){
+      animating=true;
+      leaf.style.display='block';
+      leaf.style.transition='none';
+      const single=(geom.N===1);
+      if(dir>0){
+        leaf.className='flip-sheet fwd';
+        leaf.style.left=single?'0':'50%'; leaf.style.width=single?'100%':'50%';
+        leaf.style.transformOrigin='left center';
+      }else{
+        leaf.className='flip-sheet bwd';
+        leaf.style.left='0'; leaf.style.width=single?'100%':'50%';
+        leaf.style.transformOrigin='right center';
+      }
+      leaf.style.transform='rotateY(0deg)';
+      void leaf.offsetWidth;
+      const dur=560;
+      leaf.style.transition='transform '+dur+'ms cubic-bezier(.34,.05,.4,1)';
+      leaf.style.transform=dir>0?'rotateY(-178deg)':'rotateY(178deg)';
+      setTimeout(swap,dur/2);
+      setTimeout(()=>{ leaf.style.display='none'; leaf.style.transition='none'; leaf.style.transform='rotateY(0deg)'; animating=false; },dur+40);
+    }
+
+    function openBook(){
+      seq=contentSeq();
+      let start=seq.indexOf(currentActiveId());
+      if(start<0)start=0;
+      ci=start; spread=0;
+      bookEl.classList.add('show');
+      document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden';
+      loadChapter(seq[ci]);
+      window.__bookOnTheme();
+      requestAnimationFrame(()=>{ computeGeom(); spread=0; render(); });
+    }
+    function closeBook(){
+      bookEl.classList.remove('show');
+      document.documentElement.style.overflow=''; document.body.style.overflow='';
+      if(document.fullscreenElement)document.exitFullscreen&&document.exitFullscreen().catch(()=>{});
+      if(seq[ci]&&window.go)window.go(seq[ci]);
+    }
+    window.openBook=openBook;
+
+    nextBtn.addEventListener('click',()=>doFlip(1));
+    prevBtn.addEventListener('click',()=>doFlip(-1));
+    bookEl.querySelector('#bookClose').addEventListener('click',closeBook);
+    bookEl.querySelector('#bookAminus').addEventListener('click',()=>window.fontStep(-1));
+    bookEl.querySelector('#bookAplus').addEventListener('click',()=>window.fontStep(1));
+    bookEl.querySelector('#bookTheme').addEventListener('click',()=>window.cycleTheme());
+    bookEl.querySelector('#bookFs').addEventListener('click',()=>{
+      if(!document.fullscreenElement){ (bookEl.requestFullscreen||bookEl.webkitRequestFullscreen||function(){}).call(bookEl); }
+      else { document.exitFullscreen&&document.exitFullscreen(); }
+    });
+    document.addEventListener('keydown',e=>{
+      if(!bookEl.classList.contains('show'))return;
+      if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){ doFlip(1); e.preventDefault(); }
+      else if(e.key==='ArrowLeft'||e.key==='PageUp'){ doFlip(-1); e.preventDefault(); }
+      else if(e.key==='Escape'){ closeBook(); }
+    });
+    let tsx=null;
+    pagesEl.addEventListener('touchstart',e=>{tsx=e.touches[0].clientX;},{passive:true});
+    pagesEl.addEventListener('touchend',e=>{ if(tsx==null)return; const dx=e.changedTouches[0].clientX-tsx; if(Math.abs(dx)>48)doFlip(dx<0?1:-1); tsx=null; });
+    let rt=null;
+    window.addEventListener('resize',()=>{ if(!bookEl.classList.contains('show'))return; clearTimeout(rt); rt=setTimeout(repaginate,150); });
+    document.addEventListener('fullscreenchange',()=>{ if(bookEl.classList.contains('show'))setTimeout(repaginate,120); });
+  })();
 </script>
 
 <script>
