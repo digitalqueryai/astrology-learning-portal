@@ -3280,19 +3280,23 @@
     function computeGeom(){
       const Wf=pagesEl.clientWidth, Hf=pagesEl.clientHeight;
       const N=Wf>=820?2:1;
-      const padX=Math.min(64,Math.max(22,Math.round(Wf*0.045)));
-      const padY=Math.min(58,Math.max(28,Math.round(Hf*0.055)));
-      const gap=N===2?Math.min(96,Math.max(44,Math.round(Wf*0.06))):0;
-      const innerW=Wf-2*padX;
-      const colW=(innerW-(N-1)*gap)/N;
-      flow.style.left=padX+'px'; flow.style.right=padX+'px';
-      flow.style.top=padY+'px'; flow.style.bottom=padY+'px';
+      const padX=Math.min(58,Math.max(20,Math.round(Wf*(N===2?0.04:0.062))));
+      const padY=Math.min(56,Math.max(24,Math.round(Hf*0.052)));
+      const gap=2*padX;                       /* page fore-edge / spine spacing */
+      const contentW=Wf-2*padX;
+      const colW=(contentW-(N-1)*gap)/N;
+      /* flow fills the whole page area; padding gives each page its margins */
+      flow.style.left='0'; flow.style.right='0'; flow.style.top='0'; flow.style.bottom='0';
+      flow.style.padding=padY+'px '+padX+'px';
       flow.style.columnWidth=colW+'px'; flow.style.columnGap=gap+'px';
       flow.style.transition='none'; flow.style.transform='translateX(0)';
-      const step=colW+gap;
-      const totalCols=Math.max(1,Math.round((flow.scrollWidth+gap)/step));
+      const colStep=colW+gap;                 /* one column advance */
+      const totalCols=Math.max(1,Math.round((flow.scrollWidth-2*padX+gap)/colStep));
       spreadsTotal=Math.max(1,Math.ceil(totalCols/N));
-      geom={N,colW,gap,step,spreadStep:N*step,Wf,Hf};
+      /* each spread is exactly one viewport wide */
+      geom={N,colW,gap,padX,spreadStep:Wf,Wf,Hf};
+      const spineEl=bookEl.querySelector('.book-spine');
+      if(spineEl)spineEl.style.display=(N===2)?'':'none';
     }
     function render(){
       flow.style.transition='none';
